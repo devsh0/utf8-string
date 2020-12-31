@@ -1,5 +1,6 @@
 #include "utf8.h"
 #include <cassert>
+#include <fstream>
 
 // A UTF-8 character can be of size in the range 1 to 4 bytes.
 
@@ -54,28 +55,28 @@
 //   populating the least significant bit and moving up to the most significant
 //   bit in the number. The required bits may go up to 21 characters.
 
-void length_test ()
+void test_length()
 {
     auto pigeon = Utf8::String::wrap("कबूतर");
     assert(pigeon.length() == 5);
     std::cout << "length_test passed :^)\n";
 }
 
-void at_test ()
+void test_codepoint_at()
 {
     auto pigeon = Utf8::String::wrap("कबूतर");
     assert(pigeon.length() == 5);
-    assert(pigeon.at(0) == 2325);
-    assert(pigeon.at(1) == 2348);
-    assert(pigeon.at(2) == 2370);
-    assert(pigeon.at(3) == 2340);
-    assert(pigeon.at(4) == 2352);
-    std::cout << "at test passed :^)\n";
+    assert(pigeon.codepoint_at(0) == 2325);
+    assert(pigeon.codepoint_at(1) == 2348);
+    assert(pigeon.codepoint_at(2) == 2370);
+    assert(pigeon.codepoint_at(3) == 2340);
+    assert(pigeon.codepoint_at(4) == 2352);
+    std::cout << "codepoint_at test passed :^)\n";
 }
 
 int main()
 {
-    length_test();
-    at_test();
+    test_length();
+    test_codepoint_at();
     return 0;
 }

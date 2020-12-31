@@ -29,13 +29,18 @@ inline u8 String::validate_first_byte_and_get_size(u8 firs_byte) const
     return 2 + third_bit_set + fourth_bit_set;
 }
 
+inline std::vector<u8> String::utf8_bytes_helper(size_t index, u8 size) const
+{
+    std::vector<u8> buffer;
+    buffer.reserve(size);
+
+    for (size_t i = 0; i < size; i++)
+        buffer.push_back(m_buffer.at(index + i));
+    return buffer;
+}
+
 inline u32 String::codepoint_helper(size_t index, u8 size) const
 {
-    if (size < 1 || size > 4) {
-        auto str_size = std::to_string(size);
-        throw std::invalid_argument("Invalid size!");
-    }
-
     if (size == 1)
         return m_buffer.at(index);
 
@@ -72,7 +77,7 @@ size_t String::length() const
     return m_length;
 }
 
-uint32_t String::at(size_t position) const
+std::pair<size_t, u8> String::get_index_and_size_of_char_at(size_t position) const
 {
     size_t start_index = 0;
     unsigned codepoint_size = 0;
@@ -80,6 +85,19 @@ uint32_t String::at(size_t position) const
         start_index += codepoint_size;
         codepoint_size = validate_first_byte_and_get_size(m_buffer.at(start_index));
     }
-    return codepoint_helper(start_index, codepoint_size);
+    return {start_index, codepoint_size};
 }
+
+uint32_t String::codepoint_at(size_t position) const
+{
+    auto pair = get_index_and_size_of_char_at(position);
+    return codepoint_helper(pair.first, pair.second);
+}
+
+std::vector<u8> String::bytes_of_char_at(size_t position) const
+{
+    auto pair = get_index_and_size_of_char_at(position);
+    return utf8_bytes_helper(pair.first, pair.second);
+}
+
 }
